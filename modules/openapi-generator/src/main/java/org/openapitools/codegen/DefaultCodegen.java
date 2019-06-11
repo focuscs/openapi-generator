@@ -2615,7 +2615,15 @@ public class DefaultCodegen implements CodegenConfig {
                     }
                 }
 
-                allParams.add(p);
+                if(p.isHeaderParam&&p.baseName.equals("x-dell-api-version")) {
+                    LOGGER.debug("filter header parameter x-dell-api-version");
+                }
+                else if(p.isCookieParam){
+                    LOGGER.debug("filter cookie parameter");
+                }
+                else{
+                    allParams.add(p);
+                }
 
                 if (param instanceof QueryParameter || "query".equalsIgnoreCase(param.getIn())) {
                     queryParams.add(p.copy());
@@ -2650,6 +2658,14 @@ public class DefaultCodegen implements CodegenConfig {
             } else { // optional parameters
                 optionalParams.add(cp.copy());
                 op.hasOptionalParams = true;
+            }
+        }
+
+        // check has optional query parameters
+        for(CodegenParameter cp : optionalParams){
+            if(cp.isQueryParam){
+                op.hasOptionalQueryParams = true;
+                break;
             }
         }
 
